@@ -1061,6 +1061,31 @@
     ok(showCalled, "show() called");
   });
 
+  test("Agility event bubbling", function(){
+      var parent1Called = false;
+      var parent2Called = false;
+      var parent1 = $$({
+        controller: {
+          'child:testevent': function(){
+            parent1Called = true;
+          }
+        }
+      });
+      var parent2 = $$({
+        controller: {
+          'child:testevent': function(){
+            parent2Called = true;
+          }
+        }
+      });
+      var obj = $$();
+      parent1.append(parent2);
+      parent2.append(obj);
+      obj.trigger('testevent')
+      ok(parent1Called, "event bubbled to parent 1");
+      ok(parent2Called, "event bubbled to parent 2");
+  });
+
   test("Model events", function(){
     var t = false;
     var obj = $$({}, {}, {

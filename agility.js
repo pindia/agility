@@ -197,7 +197,7 @@
         obj.trigger('show', [this]); // Dispatch show event to object
         obj._parent = this;
         // ensures object is removed from container when destroyed:
-        obj.bind('destroy', function(event, id){ 
+        obj.bind('destroy', function(event, id){
           self._container.remove(id);
         });
         return this;
@@ -685,6 +685,12 @@
         this.view.$().remove();
       },
 
+      // Triggered upon detaching self
+      _detach: function(event){
+        // detach self
+        this.view.$().detach();
+      },
+
       // Triggered after child obj is appended to container
       _append: function(event, obj, selector){
         this.view.$(selector).append(obj.view.$());
@@ -728,6 +734,9 @@
     destroy: function() {
       this.trigger('destroy', this._id); // parent must listen to 'remove' event and handle container removal!
       // can't return this as it might not exist anymore!
+    },
+    detach: function(){
+      this.trigger('detach', this._id);
     },
     parent: function(){
       return this._parent;

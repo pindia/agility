@@ -853,17 +853,17 @@
     obj1 = $$({}, '<div><span></span></div>');
     obj2 = $$({ text: 'hello' }, '<div data-bind="text"/>'); // default format should have a <div> root
     obj1.append(obj2);
-    equals(obj1.view.$('span').next().html(), 'hello', 'append() appends at root element');        
+    equals(obj1.view.$('span').next().html(), 'hello', 'append() appends at root element');
 
     obj1 = $$({}, '<div><ul/></div>');
     obj2 = $$({ text: 'hello' }, '<div data-bind="text"/>'); // default format should have a <div> root
     obj1.prepend(obj2);
-    equals(obj1.view.$('ul').prev().html(), 'hello', 'prepend() prepends at root element');        
+    equals(obj1.view.$('ul').prev().html(), 'hello', 'prepend() prepends at root element');
 
     obj1 = $$({}, '<div><ul><span/></ul></div>');
     obj2 = $$({ text: 'hello' }, '<div data-bind="text"/>'); // default format should have a <div> root
     obj1.prepend(obj2, 'ul');
-    equals(obj1.view.$('ul span').prev().html(), 'hello', 'prepend() prepends at given selector');        
+    equals(obj1.view.$('ul span').prev().html(), 'hello', 'prepend() prepends at given selector');
 
     obj1 = $$({}, '<div><ul><li id="a"/> <li id="b"/></ul></div>');
     obj2 = $$({ text: 'hello' }, '<div data-bind="text"/>'); // default format should have a <div> root
@@ -891,9 +891,28 @@
     });
     equals(flag, false, 'each() works');
     equals(count, 10, 'each() works');
-    
+
     obj1.empty();
     equals(obj1.size(), 0, 'empty() works');
+  });
+
+  test("Container object removal", function(){
+    var obj1 = $$();
+    var proto1 = $$();
+    var proto2 = $$();
+
+    var x = $$(proto1);
+    obj1.append(x);
+    obj1.append($$(proto1));
+    obj1.append($$(proto2));
+    obj1.append($$(proto2));
+
+    equals(obj1.size(), 4, '4 objects added');
+    x.destroy();
+    equals(obj1.size(), 3, 'Single object destroyed');
+    obj1.destroyChildrenOfType(proto2);
+    equals(obj1.size(), 1, 'Objects destroyed by type');
+
   });
 
   test("Model calls", function(){

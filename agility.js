@@ -775,6 +775,15 @@
       return this._container.empty.apply(this, arguments);
     },
 
+    destroyChildrenOfType: function(type){
+      this.each(function(){
+        if(this.__proto__ == type){
+          this.destroy();
+        }
+      });
+      return this;
+    },
+
     //
     // _events shortcuts
     //

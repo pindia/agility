@@ -1086,6 +1086,30 @@
       ok(parent2Called, "event bubbled to parent 2");
   });
 
+  test("Global events", function(){
+    var global1Called = false;
+    var global2Called = false;
+    var proto1 = $$({
+      controller: {
+        'global:testevent': function(){
+          global1Called = true;
+        }
+      }
+    });
+    var b = $$({
+      controller: {
+        'global:testevent2': function(){
+          global2Called = true;
+        }
+      }
+    });
+    var obj = $$(proto1);
+    $$.document.trigger('testevent');
+    $$().triggerGlobal('testevent2');
+    ok(global1Called, "global event triggered on object 1");
+    ok(global2Called, "global event triggered on object 2");
+  });
+
   test("Model events", function(){
     var t = false;
     var obj = $$({}, {}, {

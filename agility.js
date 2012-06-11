@@ -785,6 +785,10 @@
     trigger: function(){
       this._events.trigger.apply(this, arguments);
       return this; // for chainable calls
+    },
+    triggerGlobal: function(){
+      $$.document.trigger.apply($$.document, arguments);
+      return this;
     }
       
   }; // prototype

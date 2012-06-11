@@ -421,6 +421,12 @@
       // Render $root
       // Only function to access $root directly other than $()
       render: function(){
+
+        // If template is defined, render the template to define the format
+        if(this.view.template !== undefined) {
+          this.view.format = this.view.template(this.model.get());
+        }
+
         // Without format there is no view
         if (this.view.format.length === 0) {
           throw "agility.js: empty format in view.render()";

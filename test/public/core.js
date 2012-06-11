@@ -675,7 +675,7 @@
     fourth.model.set({label: "newLabel"});
     equals(fourth.view.$('span').first().text(), 'newLabel', 'naked ~change:label collapsed correctly to "change:label"');
   });
-  
+
   test("Object inheritance", function(){
     var objBase = $$({}, {format:'<div><span data-bind="first"/>.<span data-bind="last"/></div>', style:'& {float:right; display:none;}'});
     var objNewModel = {first:'Joe', last:'Doe'};
@@ -835,6 +835,41 @@
   // ----------------------------------------------
 
   module("Post-builder - Overriding default controller methods");
+
+  // ----------------------------------------------
+  //
+  //  Post-builder - Overriding default controller
+  //
+  // ----------------------------------------------
+
+  module("View rendering");
+
+  test("Full-view template rendering", function(){
+    var fakeTemplate = function(data){
+      return '<div class="test">' + data.name + '</div>';
+    };
+    var parent = $$()
+    var obj1 = $$({
+      model: {
+        name: 'Joe Doe'
+      },
+      view:{
+        template: fakeTemplate
+      },
+      controller:{
+        'change': function(){
+          this.view.render();
+        }
+      }
+    });
+    parent.append(obj1);
+    equals( parent.view.$().html(), '<div class="test">Joe Doe</div>', 'rendered as expected');
+    obj1.model.set({
+      'name': 'Jane Doe'
+    });
+    equals( parent.view.$().html(), '<div class="test">Jane Doe</div>', 're-rendered as expected');
+
+  });
 
   // ------------------------------------
   //

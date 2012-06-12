@@ -1178,6 +1178,37 @@
     ok(global2Called, "global event triggered on object 2");
   });
 
+  test("Global events automatic unbinding", function(){
+    var global1Called = false;
+    var global2Called = false;
+    var obj1 = $$({
+      controller: {
+        'global:testevent': function(){
+          global1Called = true;
+        }
+      }
+    });
+    var obj2 = $$({
+      controller: {
+        'global:testevent': function(){
+          global2Called = true;
+        }
+      }
+    });
+    $$.document.trigger('testevent');
+
+    ok(global1Called, "global event triggered on object 1");
+    ok(global2Called, "global event triggered on object 2");
+    global1Called = false;
+    global2Called = false;
+
+    obj1.destroy();
+    $$.document.trigger('testevent');
+
+    ok(!global1Called, "global event not triggered on destroyed object 1");
+    ok(global2Called, "global event triggered on object 2");
+  });
+
   test("Model events", function(){
     var t = false;
     var obj = $$({}, {}, {

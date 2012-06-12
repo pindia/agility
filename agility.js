@@ -956,10 +956,14 @@
     // Bind all controllers to their events
     for (var ev in object.controller) {
       if (typeof object.controller[ev] === 'function') {
-        if(ev.match(/^global:/))
-          $$.document.bind(ev.slice('7'), object.controller[ev]);
-        else
+        if(ev.match(/^global:/)){
+          $$.document.bind(ev.slice('7') + '.' + object._id, object.controller[ev]);
+          object.bind('_destroy', function(){
+            $$.document.unbind(ev.slice('7') + '.' + object._id);
+          });
+        } else {
           object.bind(ev, object.controller[ev]);
+        }
       }
     }  
   

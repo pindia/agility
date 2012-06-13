@@ -692,6 +692,23 @@
 
   });
 
+  test("one: controller binding", function(){
+    var numCalls = 0;
+    var obj1 = $$({
+      controller:{
+        'one:testevent': function(evt, arg){
+          ok(this == obj1 && arg == 1, 'arguments correctly forwarded');
+          numCalls += 1;
+        }
+      }
+    });
+    obj1.trigger('testevent', [1]);
+    obj1.trigger('testevent', [1]);
+    equals( numCalls, 1, 'handler code ran only once');
+
+  });
+
+
   test("Object inheritance", function(){
     var objBase = $$({}, {format:'<div><span data-bind="first"/>.<span data-bind="last"/></div>', style:'& {float:right; display:none;}'});
     var objNewModel = {first:'Joe', last:'Doe'};

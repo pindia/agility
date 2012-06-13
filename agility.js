@@ -986,6 +986,13 @@
             object.bind('_destroy', function(){
               $$.document.unbind(ev.slice('7') + '.' + object._id);
             });
+          } else if(ev.match(/^one:/)){
+            var innerHandler = handler; // Store reference in correct scope
+            object.bind(ev.slice('4') + '.' + object._id, function(){
+              console.log(handler);
+              innerHandler.apply(this, arguments);
+              object.unbind(ev.slice('4') + '.' + object._id);
+            });
           } else {
             object.bind(ev, handler);
           }

@@ -975,17 +975,22 @@
     object.view.render();
   
     // Bind all controllers to their events
-    for (var ev in object.controller) {
-      if (typeof object.controller[ev] === 'function') {
-        if(ev.match(/^global:/)){
-          $$.document.bind(ev.slice('7') + '.' + object._id, object.controller[ev]);
-          object.bind('_destroy', function(){
-            $$.document.unbind(ev.slice('7') + '.' + object._id);
-          });
-        } else {
-          object.bind(ev, object.controller[ev]);
+    for (var eventStr in object.controller) {
+      var events = eventStr.split(',');
+      var handler = object.controller[eventStr];
+      $.each(events, function(i, ev){
+        ev = ev.trim();
+        if (typeof handler === 'function') {
+          if(ev.match(/^global:/)){
+            $$.document.bind(ev.slice('7') + '.' + object._id, handler);
+            object.bind('_destroy', function(){
+              $$.document.unbind(ev.slice('7') + '.' + object._id);
+            });
+          } else {
+            object.bind(ev, handler);
+          }
         }
-      }
+      });
     }  
   
     // Auto-triggers create event

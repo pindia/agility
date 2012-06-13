@@ -708,6 +708,75 @@
 
   });
 
+  test("Model references", function(){
+    var masterChangeFooCalls = 0;
+    var masterChangeCalls = 0;
+    var referenceChangeFooCalls = 0;
+    var referenceChangeCalls = 0;
+    var destroyCalls = 0;
+
+    var master = $$({
+      model: {
+        'foo': 1,
+        'bar': 2
+      },
+      controller: {
+        'change:foo': function(){
+          masterChangeFooCalls += 1;
+        },
+        'change': function(){
+          masterChangeCalls += 1;
+        }
+      }
+    });
+    var obj1 = $$({
+      model: master,
+      controller: {
+        'change:foo': function(){
+          referenceChangeFooCalls += 1;
+        },
+        'change': function(){
+          referenceChangeCalls += 1;
+        }
+      }
+    });
+    //var obj2 = $$(obj1);
+    //obj1.trigger('testevent', [1]);
+    //obj1.trigger('testevent', [1]);
+    master.model.set({
+      'foo': 2
+    });
+    equals( obj1.model.get('foo'), 2, 'get() returns new value in referencing object')
+    equals( referenceChangeCalls, 1, 'change triggered in referencing object');
+    equals( masterChangeCalls, 1, 'change triggered in master object');
+    obj1.model.set({
+      'foo': 3
+    });
+    equals( master.model.get('foo'), 3, 'get() returns new value in master object')
+    equals( referenceChangeCalls, 2, 'change triggered in referencing object');
+    equals( masterChangeCalls, 2, 'change triggered in master object');
+    obj1.destroy();
+    master.model.set({
+      'foo': 4
+    });
+    equals( referenceChangeCalls, 2, 'change not triggered again in destroyed referencing object');
+    equals( masterChangeCalls, 3, 'change triggered in master object');
+
+    var obj3 = $$({
+      model: master,
+      controller:{
+        'destroy': function(){
+          destroyCalls += 1;
+        }
+      }
+    });
+
+    master.destroy();
+    equals( destroyCalls, 1, 'referenced object destroyed when master destroyed');
+
+
+  });
+
 
   test("Object inheritance", function(){
     var objBase = $$({}, {format:'<div><span data-bind="first"/>.<span data-bind="last"/></div>', style:'& {float:right; display:none;}'});

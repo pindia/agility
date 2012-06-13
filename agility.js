@@ -879,15 +879,42 @@
     //  Extend model, view, controller
     //
 
+    var setModel = function(data){
+      if(agility.isAgility(data)){
+        // We are referencing another Agility object's model. `data` refers to the object referenced.
+        // Proxy get() and set() to the referenced model
+        object.model.get = function(){
+          return data.model.get.apply(data, arguments);
+        };
+        object.model.set = function(){
+          return data.model.set.apply(data, arguments);
+        };
+        // Fire change events on this object when the referenced model changes
+        data.bind('_change.' + object._id , function(){
+          object.trigger('change');
+        });
+        // Destroy this object when the referenced model is destroyed
+        data.bind('_destroy.' + object._id, function(){
+          object.destroy();
+        });
+        // Unbind the change event from the referenced model when this object is destroyed
+        object.bind('destroy', function(){
+          data.unbind('.' + object._id);
+        });
+      } else{
+        $.extend(object.model._data, data);
+      }
+    };
+
     // Just the default prototype
     if (args.length === 0) {
     }
-  
+
     // Prototype differential from single {model,view,controller} object
     else if (args.length === 1 && typeof args[0] === 'object' && (args[0].model || args[0].view || args[0].controller) ) {
       for (var prop in args[0]) {
         if (prop === 'model') {
-          $.extend(object.model._data, args[0].model);
+          setModel(args[0].model);
         }
         else if (prop === 'view') {
           $.extend(object.view, args[0].view);
@@ -908,7 +935,7 @@
       
       // Model from string
       if (typeof args[0] === 'object') {
-        $.extend(object.model._data, args[0]);
+        setModel(args[0]);
       }
       else if (args[0]) {
         throw "agility.js: unknown argument type (model)";

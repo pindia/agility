@@ -907,10 +907,6 @@
         data.bind('_destroy.' + object._id, function(){
           object.destroy();
         });
-        // Unbind the change event from the referenced model when this object is destroyed
-        object.bind('destroy', function(){
-          data.unbind('.' + object._id);
-        });
       } else{
         // Just a normal model
         if(object.model._referencedObject)
@@ -999,6 +995,15 @@
     // object.* will have their 'this' === object. This should come before call to object.* below.
     util.proxyAll(object, object);
 
+
+    // Unbind the change event from the referenced model when this object is destroyed
+    // We have to put this down here to make sure object.bind is proxied correctly
+    if(object.model._referencedObject){
+      object.bind('destroy', function(){
+        object.model._referencedObject.unbind('.' + object._id);
+      });
+    }
+
     // Implement templates
     if(object.view.templates !== undefined){
       $.each(object.view.templates, function(name, template){
@@ -1048,7 +1053,6 @@
           } else if(ev.match(/^one:/)){
             var innerHandler = handler; // Store reference in correct scope
             object.bind(ev.slice('4') + '.' + object._id, function(){
-              console.log(handler);
               innerHandler.apply(this, arguments);
               object.unbind(ev.slice('4') + '.' + object._id);
             });

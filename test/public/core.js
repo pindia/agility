@@ -728,7 +728,11 @@
         }
       }
     });
-    var obj1 = $$({
+
+
+    var proto = $$();
+
+    var obj1 = $$(proto, {
       model: master,
       controller: {
         'change:foo': function(){

@@ -718,7 +718,6 @@
     var master = $$({
       model: {
         'foo': 1,
-        'bar': 2
       },
       controller: {
         'change:foo': function(){
@@ -746,13 +745,14 @@
     master.model.set({
       'foo': 2
     });
-    equals( obj1.model.get('foo'), 2, 'get() returns new value in referencing object')
+    equals( obj1.model.get('foo'), 2, 'get() returns new value in referencing object');
     equals( referenceChangeCalls, 1, 'change triggered in referencing object');
     equals( masterChangeCalls, 1, 'change triggered in master object');
+
     obj1.model.set({
       'foo': 3
     });
-    equals( master.model.get('foo'), 3, 'get() returns new value in master object')
+    equals( master.model.get('foo'), 3, 'get() returns new value in master object');
     equals( referenceChangeCalls, 2, 'change triggered in referencing object');
     equals( masterChangeCalls, 2, 'change triggered in master object');
     obj1.destroy();
@@ -774,6 +774,8 @@
     master.destroy();
     equals( destroyCalls, 1, 'referenced object destroyed when master destroyed');
 
+    equals(masterChangeCalls, masterChangeFooCalls, 'specific calls also dispatched on master');
+    equals(referenceChangeCalls, referenceChangeFooCalls, 'specific calls also displatched on reference');
 
   });
 

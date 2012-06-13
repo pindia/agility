@@ -890,8 +890,16 @@
           return data.model.set.apply(data, arguments);
         };
         // Fire change events on this object when the referenced model changes
+        // General change event
         data.bind('_change.' + object._id , function(){
           object.trigger('change');
+        });
+        // Specific change events
+        $.each(data.model._data, function(key, value){
+          data.bind('_change:' + key + '.' + object._id , function(){
+            console.log(key);
+            object.trigger('change:' + key);
+          });
         });
         // Destroy this object when the referenced model is destroyed
         data.bind('_destroy.' + object._id, function(){

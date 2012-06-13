@@ -1064,7 +1064,7 @@
   });
 
   test("Chainable calls", function(){
-    t = false;
+    var t = false;
     var obj = $$().model.set({text:'Joe Doe'}).bind('click &', function(){ t = true; }).trigger('click &');
     equals(t, true, 'chaining set(), bind(), and trigger()');
   });

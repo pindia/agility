@@ -788,6 +788,28 @@
 
   });
 
+  test("Model property-access", function(){
+    var changeCalled = false;
+    var changeFooCalled = false;
+    var obj = $$({
+      model: {
+        'foo': 5
+      },
+      controller: {
+        'change': function(){
+          changeCalled = true;
+        },
+        'change:foo': function(){
+          changeFooCalled = true;
+        }
+      }
+    });
+    equal(obj.m.foo, 5, 'obj.m.foo returns correct value');
+    obj.m.foo = 10;
+    ok(changeCalled, 'change event fired');
+    ok(changeFooCalled, 'change:foo event fired');
+    equal(obj.model.get('foo'), 10, 'obj.model.get() returns updated value');
+  });
 
   test("Object inheritance", function(){
     var objBase = $$({}, {format:'<div><span data-bind="first"/>.<span data-bind="last"/></div>', style:'& {float:right; display:none;}'});

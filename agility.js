@@ -999,7 +999,6 @@
     // object.* will have their 'this' === object. This should come before call to object.* below.
     util.proxyAll(object, object);
 
-
     // Implement templates
     if(object.view.templates !== undefined){
       $.each(object.view.templates, function(name, template){
@@ -1015,6 +1014,21 @@
         render();
       });
     }
+
+    // Model data convenience proxy
+    object.m = {};
+    $.each(object.model._data, function(key){
+      Object.defineProperty(object.m, key, {
+        get: function(){
+          return object.model.get(key);
+        },
+        set: function(value){
+          var o = {};
+          o[key] = value;
+          object.model.set(o);
+        }
+      });
+    });
 
     // Initialize $root, needed for DOM events binding below
     object.view.render();

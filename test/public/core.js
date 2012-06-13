@@ -762,6 +762,15 @@
     equals( referenceChangeCalls, 2, 'change not triggered again in destroyed referencing object');
     equals( masterChangeCalls, 3, 'change triggered in master object');
 
+    var obj2 = $$(obj1); // Inheritance of referenced model
+
+    master.model.set({
+      'foo': 5
+    });
+    equals( obj1.model.get('foo'), 5, 'get() returns new value in referencing object');
+    equals( referenceChangeCalls, 3, 'change triggered in referencing object');
+    equals( masterChangeCalls, 4, 'change triggered in master object');
+
     var obj3 = $$({
       model: master,
       controller:{

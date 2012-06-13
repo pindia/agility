@@ -883,11 +883,11 @@
     var setModel = function(data){
       if(agility.isAgility(data)){
         // We are referencing another Agility object's model. `data` refers to the object referenced.
+        object.model._referencedObject = data;
         // Proxy get(), set(), and other model methods to the referenced model
         $.each(data.model, function(method){
           if(method[0] == '_')
             return;
-          console.log(method);
           object.model[method] = function(){
             return data.model[method].apply(data, arguments);
           };
@@ -900,7 +900,6 @@
         // Specific change events
         $.each(data.model._data, function(key, value){
           data.bind('_change:' + key + '.' + object._id , function(){
-            console.log(key);
             object.trigger('change:' + key);
           });
         });
@@ -913,6 +912,9 @@
           data.unbind('.' + object._id);
         });
       } else{
+        // Just a normal model
+        if(object.model._referencedObject)
+          throw 'Cannot override model reference from prototype';
         $.extend(object.model._data, data);
       }
     };
@@ -980,6 +982,11 @@
       }
       
     } // ({model}, {view}, {controller}) args
+
+    if(prototype.model._referencedObject){
+      // If we inherited a model reference, we need to make sure the events still get set up correctly
+      setModel(prototype.model._referencedObject);
+    }
     
     //////////////////////////////////////////////////////////////////////////
     //

@@ -613,7 +613,11 @@
             if (bindData.key) {
               self.bind('_change:'+bindData.key, function(){
                 if (self.model.get(bindData.key)) {
-                  $node.text(self.model.get(bindData.key).toString());
+                  if(self.view.templates !== undefined && self.view.templates[bindData.key] !== undefined){
+                    $node.html(self.model.get(bindData.key).toString());
+                  } else {
+                    $node.text(self.model.get(bindData.key).toString());
+                  }
                 } else {
                   $node.text('');
                 }

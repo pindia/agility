@@ -897,6 +897,35 @@
 
   });
 
+  test("HTML template fragment rendering", function(){
+    var fakeTemplate = function(data){
+      if(data.status == 'loading')
+        return '<div class="loading">Loading...</div>';
+      else
+        return '<div class="done">Done</div>';
+    };
+    var obj = $$({
+      model: {
+        status: 'loading'
+      },
+      view:{
+        templates:{
+         loadingTemplate: {
+            template: fakeTemplate,
+            bind: 'status'
+          }
+        },
+        format: '<div data-bind="loadingTemplate"></div>'
+      }
+    });
+    equals( obj.view.$('div').first().text(), "Loading...", 'rendered as expected');
+    obj.model.set({
+      'status': 'done'
+    });
+    equals( obj.view.$('div').first().text(), "Done", 're-rendered as expected');
+
+  });
+
   // ------------------------------------
   //
   //  Post-builder - Default controller

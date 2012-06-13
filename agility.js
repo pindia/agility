@@ -879,16 +879,19 @@
     //  Extend model, view, controller
     //
 
+    // Helper function to unify treatment
     var setModel = function(data){
       if(agility.isAgility(data)){
         // We are referencing another Agility object's model. `data` refers to the object referenced.
-        // Proxy get() and set() to the referenced model
-        object.model.get = function(){
-          return data.model.get.apply(data, arguments);
-        };
-        object.model.set = function(){
-          return data.model.set.apply(data, arguments);
-        };
+        // Proxy get(), set(), and other model methods to the referenced model
+        $.each(data.model, function(method){
+          if(method[0] == '_')
+            return;
+          console.log(method);
+          object.model[method] = function(){
+            return data.model[method].apply(data, arguments);
+          };
+        });
         // Fire change events on this object when the referenced model changes
         // General change event
         data.bind('_change.' + object._id , function(){

@@ -718,6 +718,7 @@
     var master = $$({
       model: {
         'foo': 1,
+        'bar': 5
       },
       controller: {
         'change:foo': function(){
@@ -743,11 +744,14 @@
         }
       }
     });
+    deepEqual( obj1.model.get(), {'foo': 1, 'bar': 5}, 'get() all returns correct value in referencing object');
+
     //var obj2 = $$(obj1);
     //obj1.trigger('testevent', [1]);
     //obj1.trigger('testevent', [1]);
     master.model.set({
-      'foo': 2
+      'foo': 2,
+      'bar': 10
     });
     equals( obj1.model.get('foo'), 2, 'get() returns new value in referencing object');
     equals( referenceChangeCalls, 1, 'change triggered in referencing object');
@@ -1018,6 +1022,37 @@
       model: {
         id: '23'
       },
+      view:{
+        templates:{
+          bgImageStyle: {
+            template: fakeTemplate,
+            bind: 'id'
+          }
+        },
+        format: '<div data-bind="style=bgImageStyle"></div>'
+      }
+    });
+    equals( obj.view.$().attr('style'), "background-image: url('/some/path/23')", 'rendered as expected');
+    obj.model.set({
+      'id': '99'
+    });
+    equals( obj.view.$().attr('style'), "background-image: url('/some/path/99')", 're-rendered as expected');
+
+  });
+
+  test("Template fragment rendering with referenced model", function(){
+    var fakeTemplate = function(data){
+      return "background-image: url('/some/path/" + data.id + "')";
+    };
+
+    var master = $$({
+      model: {
+        id: '23'
+      }
+    });
+
+    var obj = $$({
+      model: master,
       view:{
         templates:{
           bgImageStyle: {

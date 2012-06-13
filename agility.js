@@ -73,7 +73,7 @@
   //
   //  util.*
   //
-  
+
   // Checks if provided obj is an agility object
   util.isAgility = function(obj){
    return obj._agility === true;
@@ -1011,6 +1011,12 @@
           var o = {};
           o[name] = template.template(object.model.get());
           object.model.set(o);
+          // If there is a referenced object model, the change event fired on the referenced model by the template
+          // fragment being updated won't automatically propagate to the real object because it's not a defined
+          // model field. We need to manually trigger the event on the current object.
+          if(object.model._referencedObject){
+            object.trigger('_change:' + name);
+          }
         };
         var bindList = template.bind.split(',');
         $.each(bindList, function(i, bindKey){

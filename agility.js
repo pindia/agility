@@ -950,6 +950,23 @@
     // object.* will have their 'this' === object. This should come before call to object.* below.
     util.proxyAll(object, object);
 
+
+    // Implement templates
+    if(object.view.templates !== undefined){
+      $.each(object.view.templates, function(name, template){
+        var render = function(){
+          var o = {};
+          o[name] = template.template(object.model.get());
+          object.model.set(o);
+        };
+        var bindList = template.bind.split(',');
+        $.each(bindList, function(i, bindKey){
+          object.bind('_change:' + bindKey, render);
+        });
+        render();
+      });
+    }
+
     // Initialize $root, needed for DOM events binding below
     object.view.render();
   

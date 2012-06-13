@@ -871,6 +871,32 @@
 
   });
 
+  test("Template fragment rendering", function(){
+    var fakeTemplate = function(data){
+      return "background-image: url('/some/path/" + data.id + "')";
+    };
+    var obj = $$({
+      model: {
+        id: '23'
+      },
+      view:{
+        templates:{
+          bgImageStyle: {
+            template: fakeTemplate,
+            bind: 'id'
+          }
+        },
+        format: '<div data-bind="style=bgImageStyle"></div>'
+      }
+    });
+    equals( obj.view.$().attr('style'), "background-image: url('/some/path/23')", 'rendered as expected');
+    obj.model.set({
+      'id': '99'
+    });
+    equals( obj.view.$().attr('style'), "background-image: url('/some/path/99')", 're-rendered as expected');
+
+  });
+
   // ------------------------------------
   //
   //  Post-builder - Default controller
